@@ -2,3 +2,7 @@
 name = "prague"
 version = "0.1.0"
 authors = ["Gabriel West <g@brielwest.me>"]
+
+[dependencies]
+rustbox = "*"
+
