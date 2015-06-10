@@ -23,14 +23,14 @@ impl Default for EntityType {
 
 #[derive(Clone, Copy, Default)]
 struct Entity {
-    e_type: EntityType,
+    kind: EntityType,
     x: usize,
     y: usize
 }
 
 impl Display for Entity {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
-        Display::fmt(match self.e_type {
+        Display::fmt(match self.kind {
             Player => "Ů",
             Wall   => "|",
             Ground => "."
@@ -43,9 +43,9 @@ impl FromStr for Entity {
 
     fn from_str(s: &str) -> Result<Entity, &'static str> {
         match s{
-            "Ů" => Ok(Entity{e_type: Player, ..Default::default()}),
-            "." => Ok(Entity{e_type: Ground, ..Default::default()}),
-            "|" => Ok(Entity{e_type: Wall, ..Default::default()}),
+            "Ů" => Ok(Entity{kind: Player, ..Default::default()}),
+            "." => Ok(Entity{kind: Ground, ..Default::default()}),
+            "|" => Ok(Entity{kind: Wall, ..Default::default()}),
             _   => Err("invalid string (unkown entity type)"),
         }
     }
@@ -57,14 +57,14 @@ impl Entity {
     }
     fn from_char(mut self, c: char) -> Result<Entity, String>{
         match c{
-            'Ů' => {self.e_type = Player; Ok(self)},
-            '.' => {self.e_type = Ground; Ok(self)},
-            '|' => {self.e_type = Wall; Ok(self)},
+            'Ů' => {self.kind = Player; Ok(self)},
+            '.' => {self.kind = Ground; Ok(self)},
+            '|' => {self.kind = Wall; Ok(self)},
             _   => Err(format!("unknown entity for: {}", c))
         }
     }
-    fn e_type(mut self, e_type: EntityType) -> Entity{
-        self.e_type = e_type;
+    fn kind(mut self, kind: EntityType) -> Entity{
+        self.kind = kind;
         self
     }
 }
@@ -121,8 +121,8 @@ fn main() {
         Result::Err(e) => panic!("{}", e),
     };
 
-    let mut p1 = Entity::new(1, 1).e_type(Player);
-    let mut world = [Entity{e_type: Wall, ..Default::default()}; 100];
+    let mut p1 = Entity::new(1, 1).kind(Player);
+    let world = [Entity{kind: Wall, ..Default::default()}; 100];
 
     loop {
         for e in world.iter() {
