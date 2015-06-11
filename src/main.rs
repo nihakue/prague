@@ -6,23 +6,29 @@ mod entity;
 mod snell;
 mod draw;
 
-use rustbox::{Color, RustBox, RB_BOLD};
-use rustbox::Key;
-
 use entity::Entity;
 use entity::EntityType::*;
 use snell::Snell;
 use draw::Draw;
 
+use rustbox::{Color, RustBox, RB_BOLD};
+use rustbox::Key;
+
+use std::fs::File;
+use std::io::prelude::*;
+
+
 fn main() {
-    let lvl1 = "........|.\n......|...\n......|...\n.......|..\n..........\n..........\n..........\n..........\n..........\n..........\n".to_string();
+    let mut lvl = String::new();
+    let mut f = File::open("testlevel.txt").unwrap();
+    f.read_to_string(&mut lvl);
 
     let rb = match RustBox::init(Default::default()) {
         Result::Ok(v) => v,
         Result::Err(e) => panic!("{}", e),
     };
     let mut p1 = Entity::new(1, 1).kind(Player);
-    let test_snell = Snell::new().load(&lvl1).expect("Error");
+    let test_snell = Snell::new().load(&lvl).expect("Error");
 
     loop {
         test_snell.draw(&rb);

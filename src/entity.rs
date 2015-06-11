@@ -3,6 +3,7 @@ use std::fmt::{Display, Formatter, Error};
 use std::default::Default;
 use self::EntityType::*;
 
+
 #[derive(Clone, Copy)]
 pub enum EntityType {
     Player,
@@ -30,24 +31,24 @@ impl Display for Entity {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         Display::fmt(match self.kind {
             Player => "Ů",
-            Wall   => "|",
-            Ground => "."
+            Wall   => "𝌆",
+            Ground => ".",
         }, f)
     }
 }
 
-impl FromStr for Entity {
-    type Err = &'static str;
+// impl FromStr for Entity {
+//     type Err = &'static str;
 
-    fn from_str(s: &str) -> Result<Entity, &'static str> {
-        match s{
-            "Ů" => Ok(Entity{kind: Player, ..Default::default()}),
-            "." => Ok(Entity{kind: Ground, ..Default::default()}),
-            "|" => Ok(Entity{kind: Wall, ..Default::default()}),
-            _   => Err("invalid string (unkown entity type)"),
-        }
-    }
-}
+//     fn from_str(s: &str) -> Result<Entity, &'static str> {
+//         match s{
+//             'Ů' => Ok(Entity{kind: Player, ..Default::default()}),
+//             '.' => Ok(Entity{kind: Ground, ..Default::default()}),
+//             '𝌆' => Ok(Entity{kind: Wall, ..Default::default()}),
+//             _   => Err("invalid string (unkown entity type)"),
+//         }
+//     }
+// }
 
 impl Entity {
     pub fn new(x: usize, y: usize) -> Entity{
@@ -57,7 +58,7 @@ impl Entity {
         match c{
             'Ů' => {self.kind = Player; Ok(self)},
             '.' => {self.kind = Ground; Ok(self)},
-            '|' => {self.kind = Wall; Ok(self)},
+            '𝌆' => {self.kind = Wall; Ok(self)},
             _   => Err(format!("unknown entity for: {}", c))
         }
     }
