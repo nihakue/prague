@@ -1,133 +1,31 @@
+#![feature(io)]
+
 extern crate rustbox;
 
-use std::default::Default;
-
-use std::str::FromStr;
-use std::fmt::{Display, Formatter};
+mod entity;
+mod snell;
+mod draw;
 
 use rustbox::{Color, RustBox, RB_BOLD};
 use rustbox::Key;
 
-use self::EntityType::*;
-
-#[derive(Clone, Copy)]
-enum EntityType {
-    Player,
-    Ground,
-    Wall
-}
-
-impl Default for EntityType {
-    fn default() -> EntityType {EntityType::Ground}
-}
-
-#[derive(Clone, Copy, Default)]
-struct Entity {
-    kind: EntityType,
-    x: usize,
-    y: usize
-}
-
-impl Display for Entity {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
-        Display::fmt(match self.kind {
-            Player => "Ů",
-            Wall   => "|",
-            Ground => "."
-        }, f)
-    }
-}
-
-impl FromStr for Entity {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Entity, &'static str> {
-        match s{
-            "Ů" => Ok(Entity{kind: Player, ..Default::default()}),
-            "." => Ok(Entity{kind: Ground, ..Default::default()}),
-            "|" => Ok(Entity{kind: Wall, ..Default::default()}),
-            _   => Err("invalid string (unkown entity type)"),
-        }
-    }
-}
-
-impl Entity {
-    fn new(x: usize, y: usize) -> Entity{
-        Entity{x: x, y: y, ..Default::default()}
-    }
-    fn from_char(mut self, c: char) -> Result<Entity, String>{
-        match c{
-            'Ů' => {self.kind = Player; Ok(self)},
-            '.' => {self.kind = Ground; Ok(self)},
-            '|' => {self.kind = Wall; Ok(self)},
-            _   => Err(format!("unknown entity for: {}", c))
-        }
-    }
-    fn kind(mut self, kind: EntityType) -> Entity{
-        self.kind = kind;
-        self
-    }
-}
-
-struct Snell {
-    width: usize,
-    height: usize,
-    entities: Vec<Entity>
-}
-
-// impl FromStr for Snell {
-//     type Err = &'static str;
-
-//     fn from_str(s: &str) -> Result<Snell, &'static str> {
-
-//     }
-// }
-
-trait Draw {
-    fn draw(&self, &RustBox);
-}
-
-impl Draw for Entity {
-    fn draw(&self, r: &RustBox) {
-        r.print(self.x, self.y, RB_BOLD, Color::White, Color::Black,
-            &format!("{}", self));
-    }
-}
+use entity::Entity;
+use entity::EntityType::*;
+use snell::Snell;
+use draw::Draw;
 
 fn main() {
-    let lvl1 = "............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................
-            ............................................................".to_string();
+    let lvl1 = "........|.\n......|...\n......|...\n.......|..\n..........\n..........\n..........\n..........\n..........\n..........\n".to_string();
 
     let rb = match RustBox::init(Default::default()) {
         Result::Ok(v) => v,
         Result::Err(e) => panic!("{}", e),
     };
-
     let mut p1 = Entity::new(1, 1).kind(Player);
-    let world = [Entity{kind: Wall, ..Default::default()}; 100];
+    let test_snell = Snell::new().load(&lvl1).expect("Error");
 
     loop {
-        for e in world.iter() {
-            e.draw(&rb);
-        }
+        test_snell.draw(&rb);
         p1.draw(&rb);
         rb.present();
 
